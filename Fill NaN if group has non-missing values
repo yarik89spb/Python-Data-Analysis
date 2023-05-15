@@ -1,0 +1,48 @@
+""" 
+1)Vectorized solution
+2)Requires Pandas and Numpy packages 
+
+
+Problem formulation: each student study at least ONE group of subject: Science OR Arts (groups_df).
+In the end of a year student must particapte the exams and get score from 0 to 100.
+If student's yearly performance for a given subject was very high, he|she automatically gets 100 points 
+and do not need to participate the exam. 
+
+Task: original dataset does not have results for auto-passed exams, replace missing values with 100 points. 
+If student participated at least one exam from a given GROUP, but some subject(s) do not have score, it means
+that they were passed automatically and must equal 100 points. 
+
+Example: Jane got score for Algebra (Science) and Physics (Science), but Geometry from the 
+same group does not have any score. Geometry's NaN must be replaced with 100, meaning
+she automatically passed the exam 
+
+"""
+
+import pandas as pd 
+import numpy as np
+
+ # Test data 
+scores_df = pd.DataFrame({'Student': ['Andy', 'Jane', 'William', 'Mary'], 
+                          'Algebra': [np.nan, 90, 50, np.nan],
+                         'Geometry': [np.nan, np.nan, 70, 75],
+                         'Physics':[np.nan, 86, 68, 80],
+                         'English': [78, np.nan, np.nan, 60],
+                         'Literature': [95, np.nan, np.nan, 73],
+                         'Poetry': [np.nan, 94, np.nan, 97]})
+groups_df = pd.DataFrame({'SubjectName':['Algebra', 'Geometry','Physics',
+                                            'English', 'Literature', 'Poetry'
+                                            ],
+                             'Group':['Science', 'Science', 'Science',
+                                      'Arts',  'Arts',  'Arts']})
+scores_df
+
+# Fill missing values using single FOR loop 
+
+for group in groups_df['Group'].unique():
+    # Get the test names of a group
+    subject_names = list(groups_df[groups_df['Group'] == group]['SubjectName'])
+    # Create temporary column to check either at least one lab test of a given set has an outcome
+    scores_df['TEMP1'] = np.where(scores_df[subject_names].notnull().any(axis=1), 1, 0)
+    scores_df.loc[scores_df['TEMP1'] == 1, subject_names] = scores_df.loc[scores_df['TEMP1'] == 1, subject_names].fillna(100)
+scores_df.drop(columns='TEMP1', inplace=True)
+scores_df
