@@ -39,7 +39,7 @@ test_df = pd.DataFrame({'D':[0, 0], 'E':[0, 0], 'C':[0, 0], 'F':[0, 0],  'B':[0,
 test_df
 
 # Re-order columns from E to B. Columns D and A remains at the same position 
-#  D  E C	F	B	A -> D  B C E F A 
+#  D E C F B A -> D B C E F A 
 # 
 SortColumns(test_df, 'E', 'B')
 # Same result, but using numeric indexes 
@@ -49,19 +49,19 @@ SortColumns(test_df, 1, 4)
 SortColumns(test_df, 'E', 4)
 
 # Re-order only SECODN HALF of columns, i.e. starting from column F
-# D  E C	F	B	A -> D	E	C	A	B	F
+# D E C	F B A -> D E C A B F
 SortColumns(test_df, 'F')
 
 # Re-order only FIRST HALF of columns, i.e. starting from column F
-D  E C	F	B	A - > C	D	E	F	B	A
+D E C F B A - > C	D E F B A
 SortColumns(test_df, end_pos='C')
 
 # Re-order all columns alphabetically
-# D  E C	F	B	A -> A	B	C	D	E	F
+# D E C	F B A -> A B C D E F
 SortColumns(test_df) 
 
 # Re-order all columns alphabetically, but in reversed order
-# D  E C	F	B	A -> 	F	E	D	C	B	A
+# D E C	F B A ->  F E D C B A
 SortColumns(test_df, asc=False)
 
 
