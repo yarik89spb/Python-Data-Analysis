@@ -1,0 +1,70 @@
+
+"""
+Re-order column in the Pandas DataFrame according to their names (alphabetically)
+By default sort ALL columns in ascending or descending order (asc_order=True/False)
+Allows choosing columns to re-order, i.e. slice from start_pos to the end_pos including
+Accepts both column names (string) and column indexes (integer), including mixing both types
+"""
+
+import pandas as pd
+
+def SortColumns(df, start_pos=None, end_pos=None, asc_order=True):
+    # df - Pandas DataFrame pd.DataFrame()
+    # start_pos, end_pos - by default are the first and last column
+    # One or both columns can take column names as a value 
+    # It will automatically turn name into column index
+    # asc_order - either sort in ascending order (boolean)
+    
+    cols = df.columns.to_list()
+    
+    if isinstance(start_pos, str) and not start_pos.isdigit():
+        start_pos = cols.index(start_pos)
+    elif start_pos == None:
+        start_pos = 0
+        
+    if isinstance(end_pos, str) and not end_pos.isdigit():
+        end_pos = cols.index(end_pos)
+    elif end_pos == None:
+        end_pos = len(cols)
+        
+    cols_ordered = sorted(cols[start_pos: end_pos+1], reverse=not asc_order)
+    
+    if len(cols_ordered) == len(cols):
+        return df[cols_ordered]
+    else:
+        return df[cols[:start_pos] + cols_ordered + cols[end_pos+1:]]
+    
+# Test data
+test_df = pd.DataFrame({'D':[0, 0], 'E':[0, 0], 'C':[0, 0], 'F':[0, 0],  'B':[0, 0], 'A':[0, 0]})
+test_df
+
+# Re-order columns from E to B. Columns D and A remains at the same position 
+#  D  E C	F	B	A -> D  B C E F A 
+# 
+SortColumns(test_df, 'E', 'B')
+# Same result, but using numeric indexes 
+SortColumns(test_df, 1, 4)
+
+# Same result, but using both column name and index
+SortColumns(test_df, 'E', 4)
+
+# Re-order only SECODN HALF of columns, i.e. starting from column F
+# D  E C	F	B	A -> D	E	C	A	B	F
+SortColumns(test_df, 'F')
+
+# Re-order only FIRST HALF of columns, i.e. starting from column F
+D  E C	F	B	A - > C	D	E	F	B	A
+SortColumns(test_df, end_pos='C')
+
+# Re-order all columns alphabetically
+# D  E C	F	B	A -> A	B	C	D	E	F
+SortColumns(test_df) 
+
+# Re-order all columns alphabetically, but in reversed order
+# D  E C	F	B	A -> 	F	E	D	C	B	A
+SortColumns(test_df, asc=False)
+
+
+
+
+
