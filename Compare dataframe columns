@@ -1,0 +1,28 @@
+"""
+Return dataframe where two columns have only DIFFERENT values 
+Useful after data processing such as cleansing, values replacement etc.
+Considers possible string|integer mismatch  
+
+"""
+
+import pandas as pd 
+
+def CompareColumns(df, columnA, columnB):  
+    # df - Pandas DataFrame
+    # columnA, columnB = column names (string)
+    
+    new_df = df.loc[: , [columnA, columnB]]
+
+    new_df[columnA] = new_df[columnA].apply(lambda x: str(x) if x == x else x)
+    new_df[columnB] = new_df[columnB].apply(lambda x: str(x) if x == x else x)
+    new_df['is_same'] = np.where(new_df[columnA] == new_df[columnB], True, False) 
+
+    return(new_df[(new_df['is_same'] == False) & ((new_df[columnA].notnull()) | (new_df[columnB].notnull()))][[columnA, columnB]])
+    
+# Test dataframe for demonstration purpose  
+test_df = pd.DataFrame({'item_id':['A11', 'A22', 'A33', 'A44', 'A55'] ,
+                        'price':['36', '45.3$', '5', 75, '21USD'],
+                        'price_new':[36, 45, 5, 75, 21]})
+test_df 
+
+CompareColumns(test_df, 'price', 'price_new')
