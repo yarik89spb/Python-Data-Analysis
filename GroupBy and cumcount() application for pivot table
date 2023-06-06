@@ -1,0 +1,48 @@
+''' 
+Problem: There is an examination session consisting of three different subjects: Calculus, English, and Literature.
+The session takes place on a specific day. Each exam result is evaluated on a scale of 0 to 100 points.
+During the examination session, students are NOT obligated to take ALL subjects. 
+They have the option to participate in the examination session multiple times and
+can choose an ARBITRARY set of subjects each time.
+
+Task: Create a pivot table that records the students attending the examination and 
+categorizes them into sessions. Each session represents a specific day on which a particular set of exams is taken.
+'''
+
+import pandas as pd 
+import numpy as np 
+
+# Sample data 
+test_df = pd.DataFrame({'StudentID':['A01', 'A01', 'A01', 'A01', 'A01', 'A01', 'A01', 'A01',
+                                     'A02', 'A03', 'A03', 'A03', 'A04', 'A04', 'A04', 'A04'],
+                       'Exam_Time':['2023-01-12', '2023-01-12', '2023-01-12',
+                                    '2023-02-14', '2023-02-14', '2023-02-14',
+                                    '2023-05-07', '2023-05-07',
+                                   '2023-01-17',
+                                   '2023-02-15', '2023-02-15', '2023-03-17',
+                                   '2023-01-17', '2023-02-15', '2023-02-15',
+                                   '2023-07-03'],
+                       'Exam_Name':['Calculus', 'English', 'Literature', 
+                                    'Calculus', 'English', 'Literature', 
+                                    'Calculus', 'English',
+                                    'Literature', 
+                                    'Calculus', 'Calculus', 'English',
+                                   'English', 'Literature', 'Literature', 'Literature'],
+                       'Exam_Score':[62, 37, 60, 42, 33, 74, 78, 85, 52, 93, 32, 95, 73, 48, 77, 95]})
+test_df['Exam_Time'] = pd.to_datetime(test_df['Exam_Time'], dayfirst=False, yearfirst=True)
+test_df
+
+# Create pivot table
+test_df = test_df.sort_values(by=['Exam_Time', 'Exam_Name'])
+test_df['Set_Number'] = test_df.groupby(['StudentID', 'Exam_Name']).cumcount() + 1
+# Remember that column names can't have duplicates, otherwise we can't create dataframe later 
+test_df['Exam_Name'] = '(Set' + test_df['Set_Number'].astype('str') + ')' + test_df['Exam_Name']
+pivot_df = pd.pivot_table(test_df, values=['Exam_Score'], 
+                                index=['StudentID'], 
+                                columns=['Set_Number', 'Exam_Name'],
+                                fill_value=np.nan, aggfunc='first')
+# Remove multi-level columns and get a Pandas DataFrame            
+pivot_df.sort_index(axis=1, inplace=True)
+pivot_df = pivot_df.droplevel([0, 1], axis=1)
+pivot_df = pivot_df.reset_index().rename_axis(mapper=None, axis=1)
+pivot_df
