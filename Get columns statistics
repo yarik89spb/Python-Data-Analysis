@@ -7,10 +7,10 @@ def StatsDataFrame(df, columns_list, cat_cols_list=[] ,num_range=False, nan_perc
     # cat_cols_list - categorical features must be handled separately
     # num_range - return min/max value or not 
     # Nan_percent=X - add a column, defining either given feature fulfill % NaN <= X requirement. X = [0, 100]
-    stat_df = pd.DataFrame({'Test_name':columns_list, 'N_unique':[len(df[now + '_LAB'].unique()) for now in columns_list],
+    stat_df = pd.DataFrame({'Test_name':columns_list, 'N_unique':[len(df[now].unique()) for now in columns_list],
                           'Is_Categorical': [np.nan] * len(columns_list)})
     stat_df['Is_Categorical'] = np.where(stat_df['Test_name'].isin(cat_cols_list), 1, 0)
-    stat_df['%missing'] = [df[col + '_LAB'].isnull().sum() / df.shape[0] for col in columns_list]
+    stat_df['%missing'] = [df[col].isnull().sum() / df.shape[0] for col in columns_list]
     stat_df['%missing'] = stat_df['%missing'].round(3) * 100 
     stat_df['%valid_values'] = 100 - stat_df['%missing']
     stat_df.loc[stat_df['%missing'] <= nan_percent, '%missing_keep'] = 1
